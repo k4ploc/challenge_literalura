@@ -4,8 +4,6 @@ import com.alura.challenge_literalura.model.Autor;
 import com.alura.challenge_literalura.model.DatosLibro;
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "libros")
 public class Libro {
@@ -15,8 +13,9 @@ public class Libro {
     private Long Id;
     @Column(unique = true)
     private String titulo;
-    @OneToMany(mappedBy = "libro", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Autor> autores;
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private Autor autor;
     private String categoria;
     private String idioma;
     private String portada;
@@ -28,7 +27,7 @@ public class Libro {
 
     public Libro(DatosLibro datosLibro) {
         this.titulo = datosLibro.titulo();
-        this.autores = datosLibro.autores();
+        this.autor = datosLibro.autores().get(0);
         this.categoria = datosLibro.categorias().get(0);
         this.idioma = datosLibro.idioma().get(0);
         this.portada = datosLibro.formatos().uriPortada();
@@ -51,12 +50,12 @@ public class Libro {
         this.titulo = titulo;
     }
 
-    public List<Autor> getAutores() {
-        return autores;
+    public Autor getAutor() {
+        return autor;
     }
 
-    public void setAutores(List<Autor> autores) {
-        this.autores = autores;
+    public void setAutor(Autor autor) {
+        this.autor = autor;
     }
 
     public String getCategoria() {
@@ -93,9 +92,9 @@ public class Libro {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("==================== LIBRO ====================\n");
+        final StringBuffer sb = new StringBuffer("\n==================== LIBRO ====================\n");
         sb.append("Titulo = ").append(titulo).append('\n');
-        sb.append("Autor = ").append(autores.get(0).getNombre()).append('\n');
+        sb.append("Autor = ").append(autor.getNombre()).append('\n');
         sb.append("Idioma = ").append(idioma).append('\n');
         sb.append("Portada = ").append(portada).append('\n');
         sb.append("Número Descargas = ").append(numeroDescargas).append("\n");
